@@ -59,6 +59,18 @@ public sealed class MapperConfiguration
         _converterRegistry.Register(converter);
     }
 
+    public void AddTypeConverter<TSource, TDestination, TConverter>()
+    where TConverter : class, ITypeConverter<TSource, TDestination>
+    {
+        if (_isSealed)
+        {
+            throw new InvalidOperationException(
+                "Mapping configuration is already initialized.");
+        }
+
+        _converterRegistry.RegisterType<TSource, TDestination, TConverter>();
+    }
+
     internal TypeConverterRegistry ConverterRegistry =>
     _converterRegistry;
 }

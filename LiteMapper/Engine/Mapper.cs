@@ -9,12 +9,20 @@ public sealed class Mapper : IMapper
     private readonly MappingEngine _engine;
 
     public Mapper(MapperConfiguration configuration)
+     : this(configuration, null)
+    {
+    }
+
+    public Mapper(
+        MapperConfiguration configuration,
+        IServiceProvider? serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         _engine = new MappingEngine(
-    configuration.Registry,
-    configuration.ConverterRegistry);
+            configuration.Registry,
+            configuration.ConverterRegistry,
+            serviceProvider);
     }
 
     public TDestination Map<TDestination>(object source)
