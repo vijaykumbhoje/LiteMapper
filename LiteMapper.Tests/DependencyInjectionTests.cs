@@ -1,6 +1,7 @@
 ﻿
 using LiteMapper.Abstractions;
 using LiteMapper.Configuration;
+using LiteMapper.Conversion;
 using LiteMapper.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -84,6 +85,59 @@ public class DependencyInjectionTests
         Assert.Same(first, second);
     }
 
+    [Fact]
+    public void AddLiteMapper_ShouldResolveScopedCustomConverterDependencies()
+    {
+        var services = new ServiceCollection();
+
+        services.AddScoped<ICurrencyFormatter, CurrencyFormatter>();
+
+        services.AddScoped<
+            ITypeConverter<decimal, string>,
+            CurrencyConverter>();
+
+        services.AddLiteMapper(cfg =>
+        {
+            cfg.AddProfile(new CurrencyMappingProfile());
+
+            cfg.AddTypeConverter<
+                decimal,
+                string,
+                CurrencyConverter>();
+        });
+
+        using var serviceProvider = services.BuildServiceProvider();
+
+        string firstResult;
+        string secondResult;
+
+        // First scope
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
+
+            var result = mapper.Map<CurrencySource, CurrencyDestination>(
+                new CurrencySource { Amount = 125.50m });
+
+            firstResult = result.Amount;
+        }
+
+        // Second scope
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
+
+            var result = mapper.Map<CurrencySource, CurrencyDestination>(
+                new CurrencySource { Amount = 125.50m });
+
+            secondResult = result.Amount;
+        }
+
+        Assert.NotEqual(firstResult, secondResult);
+        Assert.Contains("125.50", firstResult);
+        Assert.Contains("125.50", secondResult);
+    }
+
     public class Employee
     {
         public int Id { get; set; }
@@ -103,6 +157,54 @@ public class DependencyInjectionTests
         public EmployeeProfile()
         {
             CreateMap<Employee, EmployeeDto>();
+        }
+    }
+
+    public interface ICurrencyFormatter
+    {
+        string Format(decimal amount);
+    }
+
+    public class CurrencySource
+    {
+        public decimal Amount { get; set; }
+    }
+
+    public class CurrencyDestination
+    {
+        public string Amount { get; set; } = string.Empty;
+    }
+
+    public class CurrencyFormatter : ICurrencyFormatter
+    {
+        private readonly Guid _scopeId = Guid.NewGuid();
+
+        public string Format(decimal amount)
+        {
+            return $"{amount:F2}|{_scopeId}";
+        }
+    }
+
+    public class CurrencyConverter : ITypeConverter<decimal, string>
+    {
+        private readonly ICurrencyFormatter _formatter;
+
+        public CurrencyConverter(ICurrencyFormatter formatter)
+        {
+            _formatter = formatter;
+        }
+
+        public string Convert(decimal source)
+        {
+            return _formatter.Format(source);
+        }
+    }
+
+    public class CurrencyMappingProfile : MappingProfile
+    {
+        public CurrencyMappingProfile()
+        {
+            CreateMap<CurrencySource, CurrencyDestination>();
         }
     }
 }

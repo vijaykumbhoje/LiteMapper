@@ -12,15 +12,20 @@ internal sealed class MappingEngine
     private readonly TypeConverterRegistry _converterRegistry;
     private readonly MappingPlanCache _planCache;
 
+    private readonly IServiceProvider? _serviceProvider;
+
     public MappingEngine(
-        MappingRegistry registry,
-        TypeConverterRegistry converterRegistry)
+     MappingRegistry registry,
+     TypeConverterRegistry converterRegistry,
+     IServiceProvider? serviceProvider = null)
     {
         ArgumentNullException.ThrowIfNull(registry);
         ArgumentNullException.ThrowIfNull(converterRegistry);
 
         _registry = registry;
         _converterRegistry = converterRegistry;
+        _serviceProvider = serviceProvider;
+
         _planCache = new MappingPlanCache(registry);
     }
 
@@ -134,9 +139,10 @@ internal sealed class MappingEngine
 
         // Try registered custom type converters.
         if (_converterRegistry.TryConvert(
-            sourceValue,
-            destinationType,
-            out var convertedValue))
+    _serviceProvider,
+    sourceValue,
+    destinationType,
+    out var convertedValue))
         {
             return convertedValue;
         }
