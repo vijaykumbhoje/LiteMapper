@@ -1,0 +1,77 @@
+
+name: Publish LiteMapper to NuGet
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ./LiteMapper.Tests/LiteMapper.Tests.csproj
+
+      - name: Run tests on .NET 8
+        run: >
+          dotnet test ./LiteMapper.Tests/LiteMapper.Tests.csproj
+          -c Release -f net8.0 --no-restore
+
+      - name: Run tests on .NET 10
+        run: >
+          dotnet test ./LiteMapper.Tests/LiteMapper.Tests.csproj
+          -c Release -f net10.0 --no-restore
+
+      - name: Pack LiteMapper
+        run: >
+          dotnet pack ./LiteMapper/LiteMapper.csproj
+          -c Release -o ./artifacts
+          -p:Version=${GITHUB_REF_NAME#v}
+
+      - name: Pack LiteMapper.DependencyInjection
+        run: >
+          dotnet pack ./LiteMapper.DependencyInjection/LiteMapper.DependencyInjection.csproj
+          -c Release -o ./artifacts
+          -p:Version=${GITHUB_REF_NAME#v}
+
+      - name: List generated packages
+        run: ls -lh ./artifacts
+
+      - name: Authenticate with NuGet Trusted Publishing
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: vijaykumbhoje
+
+      - name: Publish LiteMapper
+        run: >
+          dotnet nuget push
+          ./artifacts/LiteMapper.${GITHUB_REF_NAME#v}.nupkg
+          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
+          --source https://api.nuget.org/v3/index.json
+
+      - name: Publish LiteMapper.DependencyInjection
+        run: >
+          dotnet nuget push
+          ./artifacts/LiteMapper.DependencyInjection.${GITHUB_REF_NAME#v}.nupkg
+          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
+          --source https://api.nuget.org/v3/index.json
