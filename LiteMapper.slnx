@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="LiteMapper.Benchmarks/LiteMapper.Benchmarks.csproj" />
-  <Project Path="LiteMapper.DependencyInjection/LiteMapper.DependencyInjection.csproj" />
-  <Project Path="LiteMapper.Tests/LiteMapper.Tests.csproj" />
-  <Project Path="LiteMapper/LiteMapper.csproj" />
-</Solution>

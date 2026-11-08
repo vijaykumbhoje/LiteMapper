@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ProMapper.Benchmarks/ProMapper.Benchmarks.csproj" />
+  <Project Path="ProMapper.DependencyInjection/ProMapper.DependencyInjection.csproj" />
+  <Project Path="ProMapper.Tests/ProMapper.Tests.csproj" />
+  <Project Path="ProMapper/ProMapper.csproj" />
+</Solution>
