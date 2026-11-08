@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>LiteMapper</id>
+    <version>1.0.0</version>
+    <authors>LiteMapper Team</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/vijaykumbhoje/LiteMapper</projectUrl>
+    <description>A lightweight and extensible object mapping library for .NET 8 and .NET 10.</description>
+    <tags>dotnet mapper mapping object-mapping automapper dto</tags>
+    <repository type="git" url="https://github.com/vijaykumbhoje/LiteMapper" commit="18d2e0e74383c241fef31c954e3e6ca14a3ca90d" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="10.0.14" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="10.0.14" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

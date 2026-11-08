@@ -64,14 +64,21 @@ public class DependencyInjectionTests
     }
 
     [Fact]
-    public void AddLiteMapper_ShouldRegisterMapperAsSingleton()
+    public void AddLiteMapper_ShouldRegisterMapperAsScoped()
     {
         using var provider = CreateServiceProvider();
 
-        var first = provider.GetRequiredService<IMapper>();
-        var second = provider.GetRequiredService<IMapper>();
+        using var firstScope = provider.CreateScope();
+        using var secondScope = provider.CreateScope();
 
-        Assert.Same(first, second);
+        var first = firstScope.ServiceProvider.GetRequiredService<IMapper>();
+        var second = secondScope.ServiceProvider.GetRequiredService<IMapper>();
+
+        Assert.Same(
+            first,
+            firstScope.ServiceProvider.GetRequiredService<IMapper>());
+
+        Assert.NotSame(first, second);
     }
 
     [Fact]
@@ -138,6 +145,67 @@ public class DependencyInjectionTests
         Assert.Contains("125.50", secondResult);
     }
 
+    [Fact]
+    public async Task AddLiteMapper_ShouldIsolateScopedConvertersAcrossConcurrentScopes()
+    {
+        var services = new ServiceCollection();
+
+        services.AddScoped<ICurrencyFormatter, CurrencyFormatter>();
+
+        services.AddScoped<
+            ITypeConverter<decimal, string>,
+            CurrencyConverter>();
+
+        services.AddLiteMapper(cfg =>
+        {
+            cfg.AddProfile(new CurrencyMappingProfile());
+
+            cfg.AddTypeConverter<
+                decimal,
+                string,
+                CurrencyConverter>();
+        });
+
+        using var serviceProvider = services.BuildServiceProvider(
+            new ServiceProviderOptions
+            {
+                ValidateScopes = true,
+                ValidateOnBuild = true
+            });
+
+        var tasks = Enumerable.Range(1, 100)
+            .Select(_ => Task.Run(() =>
+            {
+                using var scope = serviceProvider.CreateScope();
+
+                var mapper =
+                    scope.ServiceProvider.GetRequiredService<IMapper>();
+
+                var result = mapper.Map<
+                    CurrencySource,
+                    CurrencyDestination>(
+                    new CurrencySource { Amount = 125.50m });
+
+                return result.Amount;
+            }));
+
+        var results = await Task.WhenAll(tasks);
+
+        Assert.Equal(100, results.Length);
+
+        // Every scope should have its own scoped formatter instance.
+        var scopeIds = results
+            .Select(result => result.Split('|')[1])
+            .ToList();
+
+        Assert.Equal(100, scopeIds.Distinct().Count());
+
+        // Every converter should still receive the correct amount.
+        Assert.All(results, result =>
+        {
+            Assert.StartsWith("125.50|", result);
+        });
+    }
     public class Employee
     {
         public int Id { get; set; }
@@ -175,6 +243,44 @@ public class DependencyInjectionTests
         public string Amount { get; set; } = string.Empty;
     }
 
+    public class IntegerSource
+    {
+        public int Amount { get; set; }
+    }
+
+    public class IntegerDestination
+    {
+        public string Amount { get; set; } = string.Empty;
+    }
+
+    public class DecimalSource
+    {
+        public decimal Amount { get; set; }
+    }
+
+    public class DecimalDestination
+    {
+        public string Amount { get; set; } = string.Empty;
+    }
+
+    public class IntegerToStringConverter : ITypeConverter<int, string>
+    {
+        public string Convert(int source) => $"INT-{source}";
+    }
+
+    public class DecimalToStringConverter : ITypeConverter<decimal, string>
+    {
+        public string Convert(decimal source) => $"DEC-{source:F2}";
+    }
+
+    public class MultiConverterMappingProfile : MappingProfile
+    {
+        public MultiConverterMappingProfile()
+        {
+            CreateMap<IntegerSource, IntegerDestination>();
+            CreateMap<DecimalSource, DecimalDestination>();
+        }
+    }
     public class CurrencyFormatter : ICurrencyFormatter
     {
         private readonly Guid _scopeId = Guid.NewGuid();

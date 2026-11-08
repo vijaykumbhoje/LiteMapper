@@ -1,0 +1,1956 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LiteMapper</name>
+    </assembly>
+    <members>
+        <member name="T:LiteMapper.Abstractions.IMapper">
+            <summary>
+            Defines the contract for mapping objects between different types.
+            </summary>
+        </member>
+        <member name="M:LiteMapper.Abstractions.IMapper.Map``2(``0)">
+            <summary>
+            Maps a source object to a new destination object.
+            </summary>
+            <typeparam name="TSource">
+            The type of the source object.
+            </typeparam>
+            <typeparam name="TDestination">
+            The type of the destination object.
+            </typeparam>
+            <param name="source">
+            The source object to map.
+            </param>
+            <returns>
+            A new destination object containing the mapped values.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the source object is null.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when no mapping is registered for the requested types.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Abstractions.IMapper.Map``2(``0,``1)">
+            <summary>
+            Maps a source object into an existing destination object.
+            </summary>
+            <typeparam name="TSource">
+            The type of the source object.
+            </typeparam>
+            <typeparam name="TDestination">
+            The type of the destination object.
+            </typeparam>
+            <param name="source">
+            The source object to map.
+            </param>
+            <param name="destination">
+            The existing destination object to populate.
+            </param>
+            <returns>
+            The populated destination object.
+            </returns>
+        </member>
+        <member name="T:LiteMapper.Configuration.MapperConfiguration">
+             <summary>
+             Represents the configuration used by LiteMapper to define
+             object mappings, mapping profiles, and custom type converters.
+             </summary>
+             <remarks>
+             The configuration is initialized through the constructor and
+             becomes immutable after initialization.
+            
+             During initialization, registered mapping definitions are validated,
+             and both mapping and type converter registries are sealed to prevent
+             further modifications.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Configuration.MapperConfiguration.#ctor(System.Action{LiteMapper.Configuration.MapperConfiguration})">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:LiteMapper.Configuration.MapperConfiguration"/> class.
+            </summary>
+            <param name="configure">
+            An action used to configure mapping profiles and custom type converters.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the configuration action is null.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MapperConfiguration.AddProfile(LiteMapper.Configuration.MappingProfile)">
+            <summary>
+            Registers a mapping profile containing one or more mapping definitions.
+            </summary>
+            <param name="profile">
+            The mapping profile containing the mapping definitions to register.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the specified profile is null.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when attempting to add a profile after the configuration
+            has been initialized.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MapperConfiguration.AssertConfigurationIsValid">
+            <summary>
+            Validates all registered mapping definitions to ensure
+            that the configuration is correctly defined.
+            </summary>
+            <remarks>
+            This method checks the registered mappings for configuration
+            errors. It can be used to explicitly validate the configuration.
+            </remarks>
+        </member>
+        <member name="P:LiteMapper.Configuration.MapperConfiguration.Registry">
+            <summary>
+            Gets the internal registry containing registered mapping definitions.
+            </summary>
+            <value>
+            The mapping registry used internally by LiteMapper.
+            </value>
+        </member>
+        <member name="M:LiteMapper.Configuration.MapperConfiguration.AddTypeConverter``2(LiteMapper.Conversion.ITypeConverter{``0,``1})">
+            <summary>
+            Registers a custom type converter for the specified source
+            and destination types.
+            </summary>
+            <typeparam name="TSource">
+            The source type handled by the converter.
+            </typeparam>
+            <typeparam name="TDestination">
+            The destination type produced by the converter.
+            </typeparam>
+            <param name="converter">
+            The custom type converter implementation.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the specified converter is null.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when attempting to register a converter after the
+            configuration has been initialized.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MapperConfiguration.AddTypeConverter``3">
+            <summary>
+            Registers a custom type converter using its implementation type.
+            </summary>
+            <typeparam name="TSource">
+            The source type handled by the converter.
+            </typeparam>
+            <typeparam name="TDestination">
+            The destination type produced by the converter.
+            </typeparam>
+            <typeparam name="TConverter">
+            The concrete converter implementation type.
+            Must implement
+            <see cref="T:LiteMapper.Conversion.ITypeConverter`2"/>.
+            </typeparam>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when attempting to register a converter after the
+            configuration has been initialized.
+            </exception>
+        </member>
+        <member name="P:LiteMapper.Configuration.MapperConfiguration.ConverterRegistry">
+            <summary>
+            Gets the internal registry containing registered custom type converters.
+            </summary>
+            <value>
+            The type converter registry used internally by LiteMapper.
+            </value>
+        </member>
+        <member name="T:LiteMapper.Configuration.MappingDefinition">
+             <summary>
+             Represents a mapping definition between a source type and a destination type.
+             Contains the configured member-level mapping rules for the mapping operation.
+             </summary>
+             <remarks>
+             A mapping definition stores member mappings using destination member names
+             as keys. Each destination member can have only one mapping definition.
+            
+             Once sealed, the mapping definition becomes immutable and all registered
+             member mapping definitions are also sealed.
+             </remarks>
+        </member>
+        <member name="P:LiteMapper.Configuration.MappingDefinition.SourceType">
+            <summary>
+            Gets the source type used in this mapping definition.
+            </summary>
+            <value>The source type of the mapping.</value>
+        </member>
+        <member name="P:LiteMapper.Configuration.MappingDefinition.DestinationType">
+            <summary>
+            Gets the destination type used in this mapping definition.
+            </summary>
+            <value>The destination type of the mapping.</value>
+        </member>
+        <member name="P:LiteMapper.Configuration.MappingDefinition.MemberMappings">
+            <summary>
+            Gets the collection of configured member-level mapping definitions.
+            </summary>
+            <value>
+            A read-only dictionary containing destination member names
+            and their corresponding mapping definitions.
+            </value>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingDefinition.#ctor(System.Type,System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LiteMapper.Configuration.MappingDefinition"/> class.
+            </summary>
+            <param name="sourceType">
+            The source type from which values are mapped.
+            </param>
+            <param name="destinationType">
+            The destination type to which values are mapped.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the source type or destination type is null.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingDefinition.AddMemberMapping(LiteMapper.Configuration.MemberMappingDefinition)">
+            <summary>
+            Adds a member-level mapping definition to the current mapping.
+            </summary>
+            <param name="memberMapping">
+            The member mapping definition to register.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the specified member mapping is null.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when a mapping for the destination member has already been
+            configured or when the mapping definition has been sealed.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingDefinition.Seal">
+            <summary>
+            Seals the mapping definition and all its registered member mappings.
+            </summary>
+            <remarks>
+            Sealing prevents further modifications to the mapping definition.
+            Calling this method multiple times has no additional effect.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingDefinition.EnsureNotSealed">
+            <summary>
+            Ensures that the mapping definition has not been sealed.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when attempting to modify a sealed mapping definition.
+            </exception>
+        </member>
+        <member name="T:LiteMapper.Configuration.MemberMappingDefinition">
+             <summary>
+             Represents a mapping rule for an individual destination member.
+             Defines the source expression or indicates whether the destination
+             member should be ignored during mapping.
+             </summary>
+             <remarks>
+             A member mapping definition can be configured with either a source
+             expression or an ignore rule.
+            
+             Once sealed, the definition becomes immutable and cannot be modified.
+             </remarks>
+        </member>
+        <member name="P:LiteMapper.Configuration.MemberMappingDefinition.DestinationMember">
+            <summary>
+            Gets the name of the destination member associated with this mapping rule.
+            </summary>
+            <value>The destination member name.</value>
+        </member>
+        <member name="P:LiteMapper.Configuration.MemberMappingDefinition.SourceExpression">
+            <summary>
+            Gets the expression used to retrieve the source value for the
+            destination member.
+            </summary>
+            <value>
+            A lambda expression representing the source member mapping,
+            or null when the destination member is ignored or not configured.
+            </value>
+        </member>
+        <member name="P:LiteMapper.Configuration.MemberMappingDefinition.IsIgnored">
+            <summary>
+            Gets a value indicating whether the destination member
+            should be ignored during mapping.
+            </summary>
+            <value>
+            <see langword="true"/> if the destination member is ignored;
+            otherwise, <see langword="false"/>.
+            </value>
+        </member>
+        <member name="M:LiteMapper.Configuration.MemberMappingDefinition.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:LiteMapper.Configuration.MemberMappingDefinition"/> class.
+            </summary>
+            <param name="destinationMember">
+            The name of the destination member for which the mapping rule is defined.
+            </param>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the destination member name is null, empty, or consists
+            only of white-space characters.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MemberMappingDefinition.SetSourceExpression(System.Linq.Expressions.LambdaExpression)">
+            <summary>
+            Configures the source expression used to populate the destination member.
+            </summary>
+            <param name="expression">
+            A lambda expression that specifies how to retrieve the source value.
+            </param>
+            <remarks>
+            Setting a source expression automatically clears the ignore flag
+            for the destination member.
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the specified expression is null.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when attempting to modify a sealed member mapping definition.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MemberMappingDefinition.SetIgnored">
+            <summary>
+            Configures the destination member to be ignored during mapping.
+            </summary>
+            <remarks>
+            Ignoring a destination member clears any previously configured
+            source expression for that member.
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when attempting to modify a sealed member mapping definition.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MemberMappingDefinition.Seal">
+            <summary>
+            Seals the member mapping definition to prevent further modifications.
+            </summary>
+            <remarks>
+            Once sealed, source expressions and ignore settings cannot be changed.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Configuration.MemberMappingDefinition.EnsureNotSealed">
+            <summary>
+            Ensures that the member mapping definition has not been sealed.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when attempting to modify a sealed member mapping definition.
+            </exception>
+        </member>
+        <member name="T:LiteMapper.Configuration.MappingExpression`2">
+             <summary>
+             Provides a fluent API for configuring member-level mappings
+             between a source type and a destination type.
+             </summary>
+             <typeparam name="TSource">
+             The source type from which values are mapped.
+             </typeparam>
+             <typeparam name="TDestination">
+             The destination type to which values are mapped.
+             </typeparam>
+             <remarks>
+             This class allows individual destination properties to be configured
+             using strongly typed expressions.
+            
+             Member mappings can be customized using
+             <see cref="T:LiteMapper.Configuration.MemberOptions`2"/> to specify source
+             expressions or ignore destination members.
+            
+             Configuration is stored in the associated
+             <see cref="T:LiteMapper.Configuration.MappingDefinition"/>.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingExpression`2.#ctor(LiteMapper.Configuration.MappingDefinition)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:LiteMapper.Configuration.MappingExpression`2"/> class.
+            </summary>
+            <param name="definition">
+            The mapping definition that stores the configured member mappings.
+            </param>
+        </member>
+        <member name="P:LiteMapper.Configuration.MappingExpression`2.Definition">
+            <summary>
+            Gets the underlying mapping definition associated with this expression.
+            </summary>
+            <value>
+            The mapping definition containing the configured member mappings.
+            </value>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingExpression`2.ForMember``1(System.Linq.Expressions.Expression{System.Func{`1,``0}},System.Action{LiteMapper.Configuration.MemberOptions{`0,``0}})">
+            <summary>
+            Configures the mapping for a specific destination property.
+            </summary>
+            <typeparam name="TMember">
+            The type of the destination property being configured.
+            </typeparam>
+            <param name="destinationExpression">
+            An expression identifying the destination property to configure.
+            The expression must select a direct property of the destination object.
+            </param>
+            <param name="options">
+            An action used to configure the mapping behavior for the selected
+            destination property, including source expressions and ignore rules.
+            </param>
+            <returns>
+            The current <see cref="T:LiteMapper.Configuration.MappingExpression`2"/>
+            instance to support fluent configuration.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the destination expression or configuration action is null.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the destination expression does not select a direct property,
+            when the selected member is not a property, or when the destination
+            property does not have a public setter or is an indexer.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when the configuration action does not specify a source expression
+            or an ignore rule for the destination property.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingExpression`2.GetMemberExpression(System.Linq.Expressions.LambdaExpression)">
+            <summary>
+            Extracts and validates a direct property access expression
+            from the specified lambda expression.
+            </summary>
+            <param name="expression">
+            The lambda expression containing the destination property access.
+            </param>
+            <returns>
+            A <see cref="T:System.Linq.Expressions.MemberExpression"/> representing the selected property.
+            </returns>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the expression does not select a direct property
+            of the destination object.
+            </exception>
+        </member>
+        <member name="T:LiteMapper.Configuration.MappingProfile">
+             <summary>
+             Provides a base class for defining reusable object mapping profiles.
+             </summary>
+             <remarks>
+             Mapping profiles group related mapping definitions between source
+             and destination types.
+            
+             Derived profiles define mappings by calling
+             <see cref="M:LiteMapper.Configuration.MappingProfile.CreateMap``2"/> and configuring
+             individual destination members using the fluent mapping API.
+            
+             Profiles are registered with a <see cref="T:LiteMapper.Configuration.MapperConfiguration"/>,
+             which validates and seals the registered mapping definitions
+             during initialization.
+             </remarks>
+        </member>
+        <member name="P:LiteMapper.Configuration.MappingProfile.Definitions">
+            <summary>
+            Gets the collection of mapping definitions configured
+            within this profile.
+            </summary>
+            <value>
+            A list containing the mapping definitions created by this profile.
+            </value>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingProfile.CreateMap``2">
+             <summary>
+             Creates a mapping definition between the specified source
+             and destination types.
+             </summary>
+             <typeparam name="TSource">
+             The source type from which values are mapped.
+             </typeparam>
+             <typeparam name="TDestination">
+             The destination type to which values are mapped.
+             </typeparam>
+             <returns>
+             A <see cref="T:LiteMapper.Configuration.MappingExpression`2"/> instance
+             that provides a fluent API for configuring member-level mappings.
+             </returns>
+             <remarks>
+             Each call creates a new mapping definition and adds it to the
+             current profile.
+            
+             Derived profiles can use the returned mapping expression to
+             configure custom source expressions and ignored destination members.
+             </remarks>
+        </member>
+        <member name="T:LiteMapper.Configuration.MappingRegistry">
+             <summary>
+             Maintains the collection of registered object mapping definitions
+             and provides operations for registration, lookup, validation,
+             and sealing of mappings.
+             </summary>
+             <remarks>
+             The registry identifies each mapping using a combination of its
+             source type and destination type.
+            
+             Duplicate mappings for the same source and destination type
+             combination are not permitted.
+            
+             Once sealed, the registry prevents further mapping registrations
+             and seals all registered mapping definitions.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingRegistry.Register(LiteMapper.Configuration.MappingDefinition)">
+            <summary>
+            Registers a mapping definition in the registry.
+            </summary>
+            <param name="definition">
+            The mapping definition containing the source type,
+            destination type, and configured member mappings.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the specified mapping definition is null.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when a mapping for the same source and destination
+            type combination has already been registered or when the
+            registry has been sealed.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingRegistry.TryGet(System.Type,System.Type,LiteMapper.Configuration.MappingDefinition@)">
+            <summary>
+            Attempts to retrieve a registered mapping definition
+            for the specified source and destination types.
+            </summary>
+            <param name="sourceType">
+            The source type of the mapping to retrieve.
+            </param>
+            <param name="destinationType">
+            The destination type of the mapping to retrieve.
+            </param>
+            <param name="definition">
+            When this method returns, contains the matching mapping definition
+            if found; otherwise, null.
+            </param>
+            <returns>
+            <see langword="true"/> if a matching mapping definition exists;
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="P:LiteMapper.Configuration.MappingRegistry.Definitions">
+            <summary>
+            Gets all mapping definitions currently registered in the registry.
+            </summary>
+            <value>
+            A read-only collection containing the registered mapping definitions.
+            </value>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingRegistry.Validate">
+            <summary>
+            Validates all registered mapping definitions to ensure
+            that their configuration is structurally valid.
+            </summary>
+            <remarks>
+            Validation checks include:
+            <list type="bullet">
+            <item>
+            <description>Open generic source and destination types are not supported.</description>
+            </item>
+            <item>
+            <description>Configured destination properties must exist.</description>
+            </item>
+            <item>
+            <description>Destination properties must have public setters and cannot be indexers.</description>
+            </item>
+            <item>
+            <description>Non-ignored destination members must have a configured source expression.</description>
+            </item>
+            </list>
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when any registered mapping definition contains
+            an invalid configuration.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingRegistry.Seal">
+            <summary>
+            Seals the registry and all registered mapping definitions
+            to prevent further modifications.
+            </summary>
+            <remarks>
+            Calling this method multiple times has no additional effect.
+            Once sealed, new mapping definitions cannot be registered.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingRegistry.EnsureNotSealed">
+            <summary>
+            Ensures that the registry has not been sealed.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when attempting to modify a sealed registry.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MappingRegistry.ValidateDefinition(LiteMapper.Configuration.MappingDefinition)">
+             <summary>
+             Validates an individual mapping definition.
+             </summary>
+             <param name="definition">
+             The mapping definition to validate.
+             </param>
+             <remarks>
+             Validates the source and destination types and ensures that
+             every configured destination member references a valid,
+             publicly writable destination property.
+            
+             Also verifies that every non-ignored member has a configured
+             source expression.
+             </remarks>
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the mapping contains unsupported generic types,
+             references a nonexistent destination property, targets an
+             inaccessible or indexed property, or has no configured
+             source expression for a non-ignored member.
+             </exception>
+        </member>
+        <member name="T:LiteMapper.Configuration.MemberOptions`2">
+             <summary>
+             Provides options for configuring how an individual destination member
+             is populated during an object mapping operation.
+             </summary>
+             <typeparam name="TSource">
+             The source type from which the member value is retrieved.
+             </typeparam>
+             <typeparam name="TMember">
+             The type of the destination member being configured.
+             </typeparam>
+             <remarks>
+             This class provides methods to define a custom source expression
+             or to ignore the destination member during mapping.
+            
+             Instances are created internally by
+             <see cref="T:LiteMapper.Configuration.MappingExpression`2"/>
+             when configuring individual destination members.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Configuration.MemberOptions`2.#ctor(LiteMapper.Configuration.MemberMappingDefinition)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:LiteMapper.Configuration.MemberOptions`2"/> class.
+            </summary>
+            <param name="definition">
+            The member mapping definition associated with the destination member.
+            </param>
+        </member>
+        <member name="M:LiteMapper.Configuration.MemberOptions`2.MapFrom``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+             <summary>
+             Configures a custom source expression used to populate
+             the destination member.
+             </summary>
+             <typeparam name="TSourceMember">
+             The type of the value returned by the source expression.
+             </typeparam>
+             <param name="sourceExpression">
+             A lambda expression that specifies how to retrieve the value
+             from the source object.
+             </param>
+             <remarks>
+             The source expression can reference source properties, perform
+             calculations, or combine multiple source values to produce
+             the destination member value.
+            
+             Configuring a source expression clears any previously configured
+             ignore rule for the destination member.
+             </remarks>
+             <exception cref="T:System.ArgumentNullException">
+             Thrown when the specified source expression is null.
+             </exception>
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the associated member mapping definition has been sealed.
+             </exception>
+        </member>
+        <member name="M:LiteMapper.Configuration.MemberOptions`2.Ignore">
+             <summary>
+             Configures the destination member to be ignored during mapping.
+             </summary>
+             <remarks>
+             When a destination member is ignored, LiteMapper does not apply
+             a source expression to populate that member.
+            
+             Calling this method clears any previously configured source expression.
+             </remarks>
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the associated member mapping definition has been sealed.
+             </exception>
+        </member>
+        <member name="T:LiteMapper.Conversion.ITypeConverter`2">
+             <summary>
+             Defines a contract for converting an object from one type
+             to another using a custom conversion implementation.
+             </summary>
+             <typeparam name="TSource">
+             The source type of the value to be converted.
+             This type is contravariant.
+             </typeparam>
+             <typeparam name="TDestination">
+             The destination type produced by the conversion.
+             This type is covariant.
+             </typeparam>
+             <remarks>
+             Implement this interface to provide custom conversion logic
+             for source and destination type combinations.
+            
+             Custom type converters can be registered with
+             <see cref="T:LiteMapper.Configuration.MapperConfiguration"/> and are used
+             by LiteMapper during mapping operations when a matching
+             converter is available.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Conversion.ITypeConverter`2.Convert(`0)">
+            <summary>
+            Converts a value from the specified source type
+            to the destination type.
+            </summary>
+            <param name="source">
+            The source value to convert.
+            </param>
+            <returns>
+            The converted value of type <typeparamref name="TDestination"/>.
+            </returns>
+        </member>
+        <member name="T:LiteMapper.Conversion.TypeConverterRegistry">
+             <summary>
+             Maintains a registry of custom type converters and provides
+             functionality to register, resolve, and execute type conversions.
+             </summary>
+             <remarks>
+             Converters are registered using source and destination type combinations.
+            
+             The registry supports two converter registration approaches:
+             <list type="bullet">
+             <item>
+             <description>Registering an existing <see cref="T:LiteMapper.Conversion.ITypeConverter`2"/> instance.</description>
+             </item>
+             <item>
+             <description>Registering a converter implementation type that can be resolved through an <see cref="T:System.IServiceProvider"/> or instantiated using a parameterless constructor.</description>
+             </item>
+             </list>
+            
+             Once sealed, the registry does not allow additional converter registrations.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Conversion.TypeConverterRegistry.Register``2(LiteMapper.Conversion.ITypeConverter{``0,``1})">
+            <summary>
+            Registers an existing custom type converter instance
+            for the specified source and destination types.
+            </summary>
+            <typeparam name="TSource">
+            The source type handled by the converter.
+            </typeparam>
+            <typeparam name="TDestination">
+            The destination type produced by the converter.
+            </typeparam>
+            <param name="converter">
+            The custom type converter instance used to perform conversions.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the specified converter is null.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when a converter for the same source and destination
+            type combination has already been registered or when the
+            registry has been sealed.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Conversion.TypeConverterRegistry.RegisterType``3">
+             <summary>
+             Registers a custom type converter using its implementation type.
+             </summary>
+             <typeparam name="TSource">
+             The source type handled by the converter.
+             </typeparam>
+             <typeparam name="TDestination">
+             The destination type produced by the converter.
+             </typeparam>
+             <typeparam name="TConverter">
+             The concrete converter implementation type.
+             Must implement <see cref="T:LiteMapper.Conversion.ITypeConverter`2"/>.
+             </typeparam>
+             <remarks>
+             When a service provider is available, the converter is resolved
+             through dependency injection using its corresponding
+             <see cref="T:LiteMapper.Conversion.ITypeConverter`2"/> service registration.
+            
+             The resolved converter must be compatible with the specified
+             <typeparamref name="TConverter"/> implementation type.
+            
+             When no service provider is available, the converter is created
+             using <see cref="M:System.Activator.CreateInstance(System.Type)"/> and must have
+             a parameterless constructor.
+             </remarks>
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when a converter for the same source and destination
+             type combination has already been registered, when the registry
+             has been sealed, when the converter cannot be resolved through
+             dependency injection, when the resolved converter has an
+             unexpected implementation type, or when the converter cannot
+             be instantiated.
+             </exception>
+        </member>
+        <member name="M:LiteMapper.Conversion.TypeConverterRegistry.RegisterCore``2(System.Func{System.IServiceProvider,System.Object,System.Object})">
+            <summary>
+            Registers a converter delegate for the specified source
+            and destination type combination.
+            </summary>
+            <typeparam name="TSource">
+            The source type handled by the converter.
+            </typeparam>
+            <typeparam name="TDestination">
+            The destination type produced by the converter.
+            </typeparam>
+            <param name="converter">
+            The delegate responsible for executing the conversion.
+            It receives an optional service provider and the source value.
+            </param>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when a converter for the same source and destination
+            type combination has already been registered.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Conversion.TypeConverterRegistry.TryConvert(System.IServiceProvider,System.Object,System.Type,System.Object@)">
+             <summary>
+             Attempts to convert the specified source object to the
+             requested destination type using a registered custom converter.
+             </summary>
+             <param name="serviceProvider">
+             The optional service provider used to resolve converter
+             implementations registered through dependency injection.
+             </param>
+             <param name="source">
+             The source object to convert.
+             </param>
+             <param name="destinationType">
+             The requested destination type.
+             Nullable destination types are normalized to their underlying
+             types when looking up registered converters.
+             </param>
+             <param name="result">
+             When this method returns, contains the converted value if a
+             matching converter was found; otherwise, null.
+             </param>
+             <returns>
+             <see langword="true"/> if a matching converter was found
+             and executed successfully; otherwise,
+             <see langword="false"/>.
+             </returns>
+             <remarks>
+             Converter lookup uses the runtime type of the source object
+             and the normalized destination type.
+            
+             If a matching converter is found, the converter is executed
+             immediately using the supplied service provider.
+             </remarks>
+             <exception cref="T:System.ArgumentNullException">
+             Thrown when the source object or destination type is null.
+             </exception>
+             <exception cref="T:System.InvalidOperationException">
+             May be thrown when the registered converter cannot be resolved
+             or instantiated.
+             </exception>
+        </member>
+        <member name="M:LiteMapper.Conversion.TypeConverterRegistry.Seal">
+            <summary>
+            Seals the converter registry to prevent further converter registrations.
+            </summary>
+            <remarks>
+            Once sealed, the registry becomes immutable with respect to
+            converter registration.
+            Calling this method multiple times has no additional effect.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Conversion.TypeConverterRegistry.EnsureNotSealed">
+            <summary>
+            Ensures that the converter registry has not been sealed.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when attempting to register a converter after the
+            registry has been sealed.
+            </exception>
+        </member>
+        <member name="T:LiteMapper.Conversion.ValueConverter">
+             <summary>
+             Provides built-in value conversion functionality for converting
+             values between compatible .NET types.
+             </summary>
+             <remarks>
+             This class handles common type conversions required during
+             object mapping operations.
+            
+             Supported conversions include:
+             <list type="bullet">
+             <item>
+             <description>Direct assignment when the source value is compatible with the destination type.</description>
+             </item>
+             <item>
+             <description>Conversions to nullable and non-nullable destination types.</description>
+             </item>
+             <item>
+             <description>String and numeric conversions to enumeration types.</description>
+             </item>
+             <item>
+             <description>String conversions to <see cref="T:System.Guid"/>.</description>
+             </item>
+             <item>
+             <description>Standard conversions supported by <see cref="T:System.IConvertible"/>.</description>
+             </item>
+             </list>
+            
+             Culture-invariant conversion is used for standard convertible types
+             to ensure consistent results regardless of the current application culture.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Conversion.ValueConverter.ConvertValue(System.Object,System.Type)">
+             <summary>
+             Converts the specified value to the requested destination type
+             using the built-in conversion strategies.
+             </summary>
+             <param name="value">
+             The source value to convert. Can be null.
+             </param>
+             <param name="destinationType">
+             The destination type to which the source value should be converted.
+             Nullable destination types are normalized to their underlying types
+             when performing conversion.
+             </param>
+             <returns>
+             The converted value compatible with the destination type,
+             or null when the source value is null.
+             </returns>
+             <remarks>
+             The conversion process follows these steps:
+             <list type="number">
+             <item>
+             <description>Handles null source values.</description>
+             </item>
+             <item>
+             <description>Normalizes nullable destination types to their underlying types.</description>
+             </item>
+             <item>
+             <description>Returns the original value when it is already assignable to the destination type.</description>
+             </item>
+             <item>
+             <description>Handles enumeration conversions.</description>
+             </item>
+             <item>
+             <description>Handles GUID conversions.</description>
+             </item>
+             <item>
+             <description>Performs standard conversions using <see cref="M:System.Convert.ChangeType(System.Object,System.Type,System.IFormatProvider)"/>.</description>
+             </item>
+             </list>
+            
+             Standard conversions use <see cref="P:System.Globalization.CultureInfo.InvariantCulture"/>
+             to avoid dependencies on the current application culture.
+             </remarks>
+             <exception cref="T:System.ArgumentNullException">
+             Thrown when the destination type is null.
+             </exception>
+             <exception cref="T:System.FormatException">
+             Thrown when the source value cannot be interpreted in the
+             requested destination format, such as an invalid numeric
+             or GUID string.
+             </exception>
+             <exception cref="T:System.InvalidCastException">
+             Thrown when the requested conversion is not supported by
+             the source or destination type.
+             </exception>
+             <exception cref="T:System.OverflowException">
+             Thrown when the converted value exceeds the supported range
+             of the destination type.
+             </exception>
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when no supported conversion strategy exists between
+             the source and destination types.
+             </exception>
+        </member>
+        <member name="T:LiteMapper.Engine.Mapper">
+             <summary>
+             Provides methods for mapping objects between different types
+             using configured mapping definitions and custom type converters.
+             </summary>
+             <remarks>
+             The mapper acts as the primary entry point for executing mapping
+             operations in LiteMapper.
+            
+             It delegates mapping operations to the internal
+             <see cref="T:LiteMapper.Engine.MappingEngine"/> and uses the supplied
+             <see cref="T:LiteMapper.Configuration.MapperConfiguration"/> to resolve mapping definitions
+             and custom type converters.
+            
+             An optional <see cref="T:System.IServiceProvider"/> can be supplied to support
+             dependency injection when resolving custom type converters.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.Mapper.#ctor(LiteMapper.Configuration.MapperConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LiteMapper.Engine.Mapper"/> class
+            using the specified mapping configuration.
+            </summary>
+            <param name="configuration">
+            The mapping configuration containing registered mapping definitions
+            and custom type converters.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the specified configuration is null.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Engine.Mapper.#ctor(LiteMapper.Configuration.MapperConfiguration,System.IServiceProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LiteMapper.Engine.Mapper"/> class
+            using the specified mapping configuration and service provider.
+            </summary>
+            <param name="configuration">
+            The mapping configuration containing registered mapping definitions
+            and custom type converters.
+            </param>
+            <param name="serviceProvider">
+            An optional service provider used to resolve custom type converters
+            registered through dependency injection.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the specified configuration is null.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Engine.Mapper.Map``1(System.Object)">
+            <summary>
+            Maps a source object to a new destination object of the specified type.
+            </summary>
+            <typeparam name="TDestination">
+            The type of the destination object.
+            </typeparam>
+            <param name="source">
+            The source object containing the values to map.
+            </param>
+            <returns>
+            A new destination object containing the mapped values.
+            </returns>
+            <remarks>
+            The source object's runtime type is used to identify the mapping
+            definition for the requested destination type.
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the source object is null, if null sources are not
+            supported by the mapping engine.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when no matching mapping definition exists or when
+            the mapping operation cannot be completed.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Engine.Mapper.Map``2(``0)">
+            <summary>
+            Maps a source object to a new destination object using
+            the specified source and destination types.
+            </summary>
+            <typeparam name="TSource">
+            The type of the source object.
+            </typeparam>
+            <typeparam name="TDestination">
+            The type of the destination object.
+            </typeparam>
+            <param name="source">
+            The source object containing the values to map.
+            </param>
+            <returns>
+            A new destination object containing the mapped values.
+            </returns>
+            <remarks>
+            This overload provides strongly typed source and destination
+            parameters while delegating the mapping operation to the
+            internal mapping engine.
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the source object is null, if null sources are not
+            supported by the mapping engine.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when no matching mapping definition exists or when
+            the mapping operation cannot be completed.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Engine.Mapper.Map``2(``0,``1)">
+             <summary>
+             Maps values from a source object into an existing destination object.
+             </summary>
+             <typeparam name="TSource">
+             The type of the source object.
+             </typeparam>
+             <typeparam name="TDestination">
+             The type of the destination object.
+             </typeparam>
+             <param name="source">
+             The source object containing the values to map.
+             </param>
+             <param name="destination">
+             The existing destination object whose members will be populated
+             with the mapped values.
+             </param>
+             <returns>
+             The updated destination object.
+             </returns>
+             <remarks>
+             Unlike mapping to a new destination object, this overload
+             reuses the supplied destination instance.
+            
+             Existing destination values may be overwritten according
+             to the configured mapping definitions.
+             </remarks>
+             <exception cref="T:System.ArgumentNullException">
+             Thrown when the source or destination object is null,
+             if null objects are not supported by the mapping engine.
+             </exception>
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when no matching mapping definition exists or when
+             the mapping operation cannot be completed.
+             </exception>
+        </member>
+        <member name="T:LiteMapper.Engine.MappingContext">
+             <summary>
+             Maintains the execution context for an individual mapping operation,
+             including mapped object tracking and recursive mapping depth management.
+             </summary>
+             <remarks>
+             The mapping context helps LiteMapper handle circular object references
+             and prevent excessively deep recursive mapping operations.
+            
+             Mapped objects are tracked using their source object reference and
+             destination type combination. This allows previously mapped objects
+             to be reused instead of creating duplicate destination instances.
+            
+             Each mapping operation should maintain its own mapping context.
+             </remarks>
+        </member>
+        <member name="P:LiteMapper.Engine.MappingContext.CurrentDepth">
+            <summary>
+            Gets the current recursive mapping depth.
+            </summary>
+            <value>
+            The number of active mapping operations in the current recursion chain.
+            </value>
+        </member>
+        <member name="P:LiteMapper.Engine.MappingContext.MaxDepth">
+            <summary>
+            Gets the maximum permitted recursive mapping depth.
+            </summary>
+            <value>
+            The maximum mapping depth, which defaults to 64.
+            </value>
+            <remarks>
+            Mapping operations exceeding this depth limit throw an
+            <see cref="T:System.InvalidOperationException"/>.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingContext.TryGetMappedObject(System.Object,System.Type,System.Object@)">
+            <summary>
+            Attempts to retrieve an existing destination object previously
+            mapped from the specified source object.
+            </summary>
+            <param name="source">
+            The source object whose mapped destination is being requested.
+            </param>
+            <param name="destinationType">
+            The destination type associated with the previous mapping operation.
+            </param>
+            <param name="destination">
+            When this method returns, contains the previously mapped destination
+            object if found; otherwise, null.
+            </param>
+            <returns>
+            <see langword="true"/> if a previously mapped destination object
+            exists for the specified source reference and destination type;
+            otherwise, <see langword="false"/>.
+            </returns>
+            <remarks>
+            Object lookup uses reference equality for source objects rather
+            than their value-based equality implementation.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingContext.Register(System.Object,System.Type,System.Object)">
+             <summary>
+             Registers a source and destination object pair in the mapping context.
+             </summary>
+             <param name="source">
+             The original source object.
+             </param>
+             <param name="destinationType">
+             The destination type associated with the mapping.
+             </param>
+             <param name="destination">
+             The destination object created for the source object.
+             </param>
+             <remarks>
+             Registered object pairs can be retrieved later to preserve
+             object references and handle circular object relationships
+             during recursive mapping operations.
+            
+             Registering an existing key replaces its previously stored
+             destination object.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingContext.Enter">
+            <summary>
+            Enters a new recursive mapping operation and increments
+            the current mapping depth.
+            </summary>
+            <remarks>
+            The current depth is checked against <see cref="P:LiteMapper.Engine.MappingContext.MaxDepth"/>.
+            If the maximum depth is exceeded, the depth counter is restored
+            before an exception is thrown.
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when the current mapping depth exceeds the maximum
+            permitted mapping depth.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingContext.Exit">
+            <summary>
+            Exits the current recursive mapping operation and decrements
+            the current mapping depth.
+            </summary>
+            <remarks>
+            This method should be called after a successful
+            <see cref="M:LiteMapper.Engine.MappingContext.Enter"/> operation, typically within a finally block
+            to ensure that the depth counter is restored even when
+            a mapping operation fails.
+            </remarks>
+        </member>
+        <member name="T:LiteMapper.Engine.MappingContext.MappingKey">
+            <summary>
+            Represents a unique mapping key consisting of a source object
+            reference and its associated destination type.
+            </summary>
+            <param name="Source">
+            The source object reference.
+            </param>
+            <param name="DestinationType">
+            The destination type associated with the mapping.
+            </param>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingContext.MappingKey.#ctor(System.Object,System.Type)">
+            <summary>
+            Represents a unique mapping key consisting of a source object
+            reference and its associated destination type.
+            </summary>
+            <param name="Source">
+            The source object reference.
+            </param>
+            <param name="DestinationType">
+            The destination type associated with the mapping.
+            </param>
+        </member>
+        <member name="P:LiteMapper.Engine.MappingContext.MappingKey.Source">
+            <summary>
+            The source object reference.
+            </summary>
+        </member>
+        <member name="P:LiteMapper.Engine.MappingContext.MappingKey.DestinationType">
+            <summary>
+            The destination type associated with the mapping.
+            </summary>
+        </member>
+        <member name="T:LiteMapper.Engine.MappingContext.MappingKeyComparer">
+             <summary>
+             Provides reference-based equality comparison for mapping keys.
+             </summary>
+             <remarks>
+             Source objects are compared using reference equality rather than
+             their overridden equality implementations.
+            
+             Destination types are compared using standard type equality.
+             Hash codes are generated using the source object's runtime
+             identity hash code and the destination type.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingContext.MappingKeyComparer.Equals(LiteMapper.Engine.MappingContext.MappingKey,LiteMapper.Engine.MappingContext.MappingKey)">
+            <summary>
+            Determines whether two mapping keys represent the same
+            source object reference and destination type.
+            </summary>
+            <param name="x">The first mapping key.</param>
+            <param name="y">The second mapping key.</param>
+            <returns>
+            <see langword="true"/> if both keys reference the same source
+            object and destination type; otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingContext.MappingKeyComparer.GetHashCode(LiteMapper.Engine.MappingContext.MappingKey)">
+            <summary>
+            Returns the hash code for the specified mapping key.
+            </summary>
+            <param name="obj">
+            The mapping key whose hash code is required.
+            </param>
+            <returns>
+            A hash code based on the source object's runtime identity
+            and destination type.
+            </returns>
+        </member>
+        <member name="T:LiteMapper.Engine.MappingEngine">
+             <summary>
+             Executes object-to-object mappings using registered mapping definitions,
+             cached mapping plans, and custom type converters.
+             </summary>
+             <remarks>
+             The mapping engine handles direct property assignment, type conversion,
+             nested object mapping, and collection mapping. It also supports mapping
+             into existing destination objects and collections.
+            
+             A <see cref="T:LiteMapper.Engine.MappingContext"/> is created when reference tracking is
+             required by the mapping plan. This allows the engine to preserve object
+             references and handle circular object graphs.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingEngine.#ctor(LiteMapper.Configuration.MappingRegistry,LiteMapper.Conversion.TypeConverterRegistry,System.IServiceProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LiteMapper.Engine.MappingEngine"/> class.
+            </summary>
+            <param name="registry">
+            The registry containing configured object mapping definitions.
+            </param>
+            <param name="converterRegistry">
+            The registry containing custom type converters.
+            </param>
+            <param name="serviceProvider">
+            An optional service provider used to resolve dependencies required
+            by custom type converters.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when <paramref name="registry"/> or
+            <paramref name="converterRegistry"/> is null.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingEngine.Map(System.Object,System.Type,System.Object)">
+            <summary>
+            Maps a source object to the specified destination type.
+            </summary>
+            <param name="source">
+            The source object to map.
+            </param>
+            <param name="destinationType">
+            The type of the destination object.
+            </param>
+            <param name="destination">
+            An optional existing destination object to populate.
+            When null, a new destination instance is created.
+            </param>
+            <returns>
+            The mapped destination object.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when <paramref name="source"/> is null.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when a destination instance cannot be created.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingEngine.Map(System.Object,System.Type,System.Object,LiteMapper.Engine.MappingContext)">
+            <summary>
+            Maps a source object to a destination object using an optional
+            mapping context.
+            </summary>
+            <param name="source">
+            The source object to map.
+            </param>
+            <param name="destinationType">
+            The type of the destination object.
+            </param>
+            <param name="destination">
+            An optional existing destination instance to populate.
+            </param>
+            <param name="context">
+            The mapping context used to track previously mapped objects and
+            manage reference tracking across nested mappings.
+            </param>
+            <returns>
+            The mapped destination object.
+            </returns>
+            <remarks>
+            The method retrieves a cached mapping plan, creates a mapping context
+            when reference tracking is required, and registers the destination
+            before mapping its properties. Registering the destination before
+            processing properties helps prevent infinite recursion when circular
+            references are encountered.
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when <paramref name="source"/> is null.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when a destination instance cannot be created.
+            </exception>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingEngine.MapValue(System.Object,System.Type,LiteMapper.Engine.MappingContext,System.Object)">
+            <summary>
+            Converts or maps a source value to the specified destination type.
+            </summary>
+            <param name="sourceValue">
+            The source value to convert or map.
+            </param>
+            <param name="destinationType">
+            The requested destination type.
+            </param>
+            <param name="context">
+            The optional mapping context used for nested object mapping
+            and reference tracking.
+            </param>
+            <param name="existingDestination">
+            An optional existing destination value. For collection mappings,
+            this value may be reused and populated when it is compatible
+            and mutable.
+            </param>
+            <returns>
+            The converted or mapped value, or null when the source value is null.
+            </returns>
+            <remarks>
+            Conversion is attempted in the following order:
+            <list type="number">
+            <item>
+            <description>Map compatible collection values into destination collections.</description>
+            </item>
+            <item>
+            <description>Return values that can be assigned directly.</description>
+            </item>
+            <item>
+            <description>Use a registered custom type converter.</description>
+            </item>
+            <item>
+            <description>Map supported collection types.</description>
+            </item>
+            <item>
+            <description>Perform nested object mapping when a mapping definition exists.</description>
+            </item>
+            <item>
+            <description>Fall back to standard value conversion.</description>
+            </item>
+            </list>
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingEngine.MapCollection(System.Collections.IEnumerable,System.Type,System.Type,LiteMapper.Engine.MappingContext,System.Object)">
+             <summary>
+             Maps the elements of a source collection into a destination collection.
+             </summary>
+             <param name="sourceCollection">
+             The source collection whose elements will be mapped.
+             </param>
+             <param name="destinationType">
+             The destination collection type.
+             </param>
+             <param name="destinationElementType">
+             The element type of the destination collection.
+             </param>
+             <param name="context">
+             The optional mapping context used when mapping collection elements.
+             </param>
+             <param name="existingDestination">
+             An optional existing destination collection that may be reused
+             when it is compatible and mutable.
+             </param>
+             <returns>
+             A mapped collection compatible with
+             <paramref name="destinationType"/>.
+             </returns>
+             <remarks>
+             Supported destination collection types include arrays,
+             <see cref="T:System.Collections.Generic.HashSet`1"/>, <see cref="T:System.Collections.Generic.Queue`1"/>,
+             <see cref="T:System.Collections.Generic.Stack`1"/>, <see cref="T:System.Collections.Generic.List`1"/>, and the supported
+             collection interfaces.
+            
+             When a compatible mutable destination collection is provided,
+             the engine attempts to clear and populate that collection.
+             Stack elements are pushed in source enumeration order, so
+             stack enumeration follows last-in-first-out ordering.
+             </remarks>
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested destination collection type cannot
+             be created using the supported collection implementations.
+             </exception>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingEngine.IsSetCollection(System.Type)">
+            <summary>
+            Determines whether the specified collection type represents
+            a set collection.
+            </summary>
+            <param name="collectionType">
+            The collection type to inspect.
+            </param>
+            <returns>
+            <see langword="true"/> when the type is
+            <see cref="T:System.Collections.Generic.HashSet`1"/> or <see cref="T:System.Collections.Generic.ISet`1"/>;
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingEngine.TryGetCollectionElementType(System.Type,System.Type@)">
+            <summary>
+            Attempts to determine the element type of a supported collection.
+            </summary>
+            <param name="collectionType">
+            The collection type to inspect.
+            </param>
+            <param name="elementType">
+            When this method returns <see langword="true"/>, contains the
+            collection element type. Otherwise, contains null.
+            </param>
+            <returns>
+            <see langword="true"/> when the specified type is an array or
+            one of the supported generic collection types; otherwise,
+            <see langword="false"/>.
+            </returns>
+            <remarks>
+            Supported generic collection definitions include
+            <see cref="T:System.Collections.Generic.List`1"/>, <see cref="T:System.Collections.Generic.IEnumerable`1"/>,
+            <see cref="T:System.Collections.Generic.ICollection`1"/>, <see cref="T:System.Collections.Generic.IReadOnlyCollection`1"/>,
+            <see cref="T:System.Collections.Generic.IReadOnlyList`1"/>, <see cref="T:System.Collections.Generic.HashSet`1"/>,
+            <see cref="T:System.Collections.Generic.ISet`1"/>, <see cref="T:System.Collections.Generic.Queue`1"/>, and
+            <see cref="T:System.Collections.Generic.Stack`1"/>.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingEngine.TryPopulateExistingCollection(System.Object,System.Collections.Generic.List{System.Object},System.Type)">
+             <summary>
+             Attempts to populate an existing destination collection with
+             the supplied mapped items.
+             </summary>
+             <param name="destination">
+             The existing destination collection to populate.
+             </param>
+             <param name="mappedItems">
+             The mapped items to add to the destination collection.
+             </param>
+             <param name="elementType">
+             The element type used to locate compatible collection methods
+             through reflection.
+             </param>
+             <returns>
+             <see langword="true"/> when the destination collection is
+             successfully populated; otherwise, <see langword="false"/>
+             when the collection does not expose a supported mutable
+             collection interface or method.
+             </returns>
+             <remarks>
+             The method supports mutable <see cref="T:System.Collections.IList"/> implementations
+             and collections exposing compatible <c>Clear</c> and
+             <c>Add</c>, <c>Enqueue</c>, or <c>Push</c> methods.
+            
+             Existing collection contents are cleared before the mapped
+             items are added.
+             </remarks>
+        </member>
+        <member name="T:LiteMapper.Engine.MappingPlan">
+             <summary>
+             Represents a compiled mapping plan between a source type and a destination type.
+             </summary>
+             <remarks>
+             A mapping plan contains the property mapping instructions required to map
+             objects of the configured source and destination types.
+            
+             Property accessors and setters are compiled into delegates using expression
+             trees to avoid repeated reflection during mapping operations.
+            
+             The plan also determines whether reference tracking is required based on
+             the properties included in the mapping.
+             </remarks>
+        </member>
+        <member name="P:LiteMapper.Engine.MappingPlan.Properties">
+            <summary>
+            Gets the compiled property mapping instructions.
+            </summary>
+            <value>
+            A read-only collection of <see cref="T:LiteMapper.Engine.PropertyMapPlan"/> instances
+            describing how individual properties are mapped.
+            </value>
+        </member>
+        <member name="P:LiteMapper.Engine.MappingPlan.RequiresReferenceTracking">
+            <summary>
+            Gets a value indicating whether this mapping plan requires
+            reference tracking.
+            </summary>
+            <value>
+            <see langword="true"/> if at least one property mapping requires
+            reference tracking; otherwise, <see langword="false"/>.
+            </value>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlan.#ctor(System.Collections.Generic.List{LiteMapper.Engine.PropertyMapPlan})">
+            <summary>
+            Initializes a new instance of the <see cref="T:LiteMapper.Engine.MappingPlan"/> class.
+            </summary>
+            <param name="properties">
+            The compiled property mapping instructions.
+            </param>
+            <remarks>
+            The supplied property mappings are exposed as a read-only collection.
+            The reference tracking requirement is calculated from the individual
+            property mapping plans.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlan.Build(System.Type,System.Type,LiteMapper.Configuration.MappingDefinition)">
+             <summary>
+             Builds a mapping plan for the specified source and destination types.
+             </summary>
+             <param name="sourceType">
+             The source type whose properties provide mapping values.
+             </param>
+             <param name="destinationType">
+             The destination type whose properties receive mapped values.
+             </param>
+             <param name="definition">
+             The mapping definition containing explicit member configurations,
+             including ignored members and custom source expressions.
+             </param>
+             <returns>
+             A compiled <see cref="T:LiteMapper.Engine.MappingPlan"/> containing the property mappings
+             supported by the supplied types and configuration.
+             </returns>
+             <remarks>
+             Property mappings are created using the following rules:
+             <list type="number">
+             <item>
+             <description>
+             Destination properties must have a public getter and must not be indexers.
+             </description>
+             </item>
+             <item>
+             <description>
+             Destination properties must have a public setter or be a supported
+             getter-only collection.
+             </description>
+             </item>
+             <item>
+             <description>
+             Explicit member configurations take precedence over convention-based
+             property matching.
+             </description>
+             </item>
+             <item>
+             <description>
+             When no explicit configuration exists, source properties are matched
+             by name using case-insensitive comparison.
+             </description>
+             </item>
+             </list>
+            
+             Getter and setter delegates are compiled for the selected properties
+             and stored in the resulting mapping plan.
+             </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlan.CompileSourcePropertyGetter(System.Type,System.Reflection.PropertyInfo)">
+            <summary>
+            Compiles a delegate that retrieves a property value from a source object.
+            </summary>
+            <param name="sourceType">
+            The runtime type expected for the source object.
+            </param>
+            <param name="property">
+            The source property to access.
+            </param>
+            <returns>
+            A delegate that accepts a source object and returns the selected
+            property value as an object.
+            </returns>
+            <remarks>
+            An expression tree is created to cast the input object to the specified
+            source type, access the property, convert the result to
+            <see cref="T:System.Object"/>, and compile the expression into a delegate.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlan.CompileDestinationPropertyGetter(System.Type,System.Reflection.PropertyInfo)">
+            <summary>
+            Compiles a delegate that retrieves a property value from a destination object.
+            </summary>
+            <param name="destinationType">
+            The runtime type expected for the destination object.
+            </param>
+            <param name="property">
+            The destination property to access.
+            </param>
+            <returns>
+            A delegate that accepts a destination object and returns the selected
+            property value as an object.
+            </returns>
+            <remarks>
+            The generated expression casts the input object to the destination type,
+            accesses the specified property, converts its value to
+            <see cref="T:System.Object"/>, and compiles the expression into a delegate.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlan.CompileSourceExpression(System.Linq.Expressions.LambdaExpression)">
+            <summary>
+            Compiles a configured source expression into a delegate that accepts
+            a source object.
+            </summary>
+            <param name="sourceExpression">
+            The configured lambda expression used to retrieve the source value.
+            </param>
+            <returns>
+            A delegate that accepts a source object and evaluates the configured
+            expression, returning its result as an object.
+            </returns>
+            <remarks>
+            The original lambda parameter is replaced with a parameter that accepts
+            <see cref="T:System.Object"/>. The replacement expression casts that object to
+            the original parameter type before evaluating the expression.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlan.CompilePropertySetter(System.Type,System.Reflection.PropertyInfo)">
+            <summary>
+            Compiles a delegate that assigns a value to a destination property.
+            </summary>
+            <param name="destinationType">
+            The runtime type expected for the destination object.
+            </param>
+            <param name="property">
+            The destination property to assign.
+            </param>
+            <returns>
+            A delegate that accepts a destination object and a value, then assigns
+            the value to the specified property.
+            </returns>
+            <remarks>
+            The generated expression casts the destination object and assigned value
+            to their respective types, performs the property assignment, and
+            compiles the expression into an action delegate.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlan.IsSupportedGetterOnlyCollection(System.Type)">
+             <summary>
+             Determines whether a property type is a supported collection type
+             that can be mapped without a public setter.
+             </summary>
+             <param name="type">
+             The property type to inspect.
+             </param>
+             <returns>
+             <see langword="true"/> if the type is a supported generic collection
+             type other than a string or array; otherwise,
+             <see langword="false"/>.
+             </returns>
+             <remarks>
+             Supported generic collection definitions include
+             <see cref="T:System.Collections.Generic.List`1"/>, <see cref="T:System.Collections.Generic.IEnumerable`1"/>,
+             <see cref="T:System.Collections.Generic.ICollection`1"/>, <see cref="T:System.Collections.Generic.IReadOnlyCollection`1"/>,
+             <see cref="T:System.Collections.Generic.IReadOnlyList`1"/>, <see cref="T:System.Collections.Generic.HashSet`1"/>,
+             <see cref="T:System.Collections.Generic.ISet`1"/>, <see cref="T:System.Collections.Generic.Queue`1"/>, and
+             <see cref="T:System.Collections.Generic.Stack`1"/>.
+            
+             This check allows supported getter-only collection properties to
+             participate in mapping because their existing collection instances
+             can be populated without assigning a new collection reference.
+             </remarks>
+        </member>
+        <member name="T:LiteMapper.Engine.MappingPlan.ParameterReplaceVisitor">
+            <summary>
+            Replaces occurrences of a specified expression parameter with
+            another expression.
+            </summary>
+            <remarks>
+            This visitor is used when compiling configured source expressions.
+            It replaces the original strongly typed lambda parameter with an
+            expression that converts an object parameter to the required source type.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlan.ParameterReplaceVisitor.#ctor(System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.Expression)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:LiteMapper.Engine.MappingPlan.ParameterReplaceVisitor"/> class.
+            </summary>
+            <param name="source">
+            The original parameter expression to replace.
+            </param>
+            <param name="replacement">
+            The expression that replaces the original parameter.
+            </param>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlan.ParameterReplaceVisitor.VisitParameter(System.Linq.Expressions.ParameterExpression)">
+            <summary>
+            Visits a parameter expression and replaces it when it matches
+            the configured source parameter.
+            </summary>
+            <param name="node">
+            The parameter expression being visited.
+            </param>
+            <returns>
+            The replacement expression when <paramref name="node"/> matches
+            the configured source parameter; otherwise, the result of the
+            base visitor implementation.
+            </returns>
+        </member>
+        <member name="T:LiteMapper.Engine.MappingPlanCache">
+             <summary>
+             Provides a thread-safe cache for compiled <see cref="T:LiteMapper.Engine.MappingPlan"/> instances.
+             </summary>
+             <remarks>
+             Mapping plans are cached using the source and destination type pair as the
+             cache key. This avoids repeatedly building mapping plans for the same
+             combination of types.
+            
+             The cache uses <see cref="T:System.Collections.Concurrent.ConcurrentDictionary`2"/> to support
+             concurrent access and <see cref="T:System.Lazy`1"/> to ensure that each mapping
+             plan is initialized only once when multiple threads request it simultaneously.
+             </remarks>
+        </member>
+        <member name="F:LiteMapper.Engine.MappingPlanCache._plans">
+            <summary>
+            Stores mapping plans indexed by their source and destination type pair.
+            </summary>
+            <remarks>
+            Each value is wrapped in <see cref="T:System.Lazy`1"/> using
+            <see cref="F:System.Threading.LazyThreadSafetyMode.ExecutionAndPublication"/> to provide
+            thread-safe, deferred initialization of mapping plans.
+            </remarks>
+        </member>
+        <member name="F:LiteMapper.Engine.MappingPlanCache._registry">
+            <summary>
+            Gets the registry containing the configured mapping definitions.
+            </summary>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlanCache.#ctor(LiteMapper.Configuration.MappingRegistry)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LiteMapper.Engine.MappingPlanCache"/> class.
+            </summary>
+            <param name="registry">
+            The registry used to retrieve mapping definitions when a mapping plan
+            is not already cached.
+            </param>
+        </member>
+        <member name="M:LiteMapper.Engine.MappingPlanCache.GetPlan(System.Type,System.Type)">
+             <summary>
+             Gets the compiled mapping plan for the specified source and destination types.
+             </summary>
+             <param name="sourceType">
+             The source type of the mapping operation.
+             </param>
+             <param name="destinationType">
+             The destination type of the mapping operation.
+             </param>
+             <returns>
+             The cached or newly created <see cref="T:LiteMapper.Engine.MappingPlan"/> for the specified
+             source and destination type combination.
+             </returns>
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when no mapping definition is registered for the specified
+             source and destination types.
+             </exception>
+             <remarks>
+             The method first checks the cache for an existing mapping plan.
+             If no plan is found, it creates a lazy initialization entry and adds
+             it to the concurrent dictionary.
+            
+             The mapping definition is retrieved from the
+             <see cref="T:LiteMapper.Configuration.MappingRegistry"/> and used to build the mapping plan.
+             The resulting plan is initialized only when its value is accessed.
+             </remarks>
+        </member>
+        <member name="P:LiteMapper.Engine.MappingPlanCache.Count">
+            <summary>
+            Gets the number of mapping plans currently stored in the cache.
+            </summary>
+            <value>
+            The number of source and destination type combinations
+            currently cached.
+            </value>
+        </member>
+        <member name="T:LiteMapper.Engine.PropertyMapPlan">
+             <summary>
+             Represents the compiled mapping instructions for a single source-to-destination
+             property mapping.
+             </summary>
+             <remarks>
+             This class stores the delegates used to read the source property, read the
+             existing destination property, and optionally assign the mapped value.
+            
+             It also determines whether the source value can be assigned directly to
+             the destination property and whether reference tracking is required.
+             </remarks>
+        </member>
+        <member name="P:LiteMapper.Engine.PropertyMapPlan.DestinationPropertyType">
+            <summary>
+            Gets the type of the destination property.
+            </summary>
+            <value>
+            The declared property type on the destination object.
+            </value>
+        </member>
+        <member name="P:LiteMapper.Engine.PropertyMapPlan.SourceGetter">
+            <summary>
+            Gets the compiled delegate used to retrieve the source property value.
+            </summary>
+            <value>
+            A delegate that accepts a source object and returns the property value.
+            </value>
+        </member>
+        <member name="P:LiteMapper.Engine.PropertyMapPlan.DestinationGetter">
+            <summary>
+            Gets the compiled delegate used to retrieve the current destination property value.
+            </summary>
+            <value>
+            A delegate that accepts a destination object and returns the current
+            property value.
+            </value>
+        </member>
+        <member name="P:LiteMapper.Engine.PropertyMapPlan.DestinationSetter">
+            <summary>
+            Gets the compiled delegate used to assign a value to the destination property.
+            </summary>
+            <value>
+            An assignment delegate, or <see langword="null"/> when the destination
+            property does not have a public setter.
+            </value>
+            <remarks>
+            A null setter can be used for supported getter-only collection properties,
+            where the existing collection instance can be populated instead of
+            assigning a new instance.
+            </remarks>
+        </member>
+        <member name="P:LiteMapper.Engine.PropertyMapPlan.CanAssignDirectly">
+            <summary>
+            Gets a value indicating whether the source property type can be assigned
+            directly to the destination property type.
+            </summary>
+            <value>
+            <see langword="true"/> when the destination property type is assignable
+            from the source property type; otherwise, <see langword="false"/>.
+            </value>
+        </member>
+        <member name="P:LiteMapper.Engine.PropertyMapPlan.RequiresReferenceTracking">
+            <summary>
+            Gets a value indicating whether mapping this property requires
+            reference tracking.
+            </summary>
+            <value>
+            <see langword="true"/> when the destination property type is a
+            reference type other than <see cref="T:System.String"/>; otherwise,
+            <see langword="false"/>.
+            </value>
+            <remarks>
+            Nullable value types are evaluated using their underlying type.
+            Reference tracking is used to preserve object references and help
+            handle circular references during nested mapping operations.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.Engine.PropertyMapPlan.#ctor(System.Type,System.Type,System.Func{System.Object,System.Object},System.Func{System.Object,System.Object},System.Action{System.Object,System.Object})">
+            <summary>
+            Initializes a new instance of the <see cref="T:LiteMapper.Engine.PropertyMapPlan"/> class.
+            </summary>
+            <param name="sourcePropertyType">
+            The declared type of the source property.
+            </param>
+            <param name="destinationPropertyType">
+            The declared type of the destination property.
+            </param>
+            <param name="sourceGetter">
+            The compiled delegate used to retrieve the source property value.
+            </param>
+            <param name="destinationGetter">
+            The compiled delegate used to retrieve the existing destination property value.
+            </param>
+            <param name="destinationSetter">
+            The optional compiled delegate used to assign the mapped value to the
+            destination property. Can be null for supported getter-only collections.
+            </param>
+            <remarks>
+            The constructor determines whether direct assignment is possible by
+            checking type assignability. It also determines whether reference
+            tracking is required based on the destination property's underlying type.
+            </remarks>
+        </member>
+    </members>
+</doc>
