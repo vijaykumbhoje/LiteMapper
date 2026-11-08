@@ -17,6 +17,7 @@
     <PackageTags>dotnet;mapper;mapping;object-mapping</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/YOUR-USERNAME/LiteMapper</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
