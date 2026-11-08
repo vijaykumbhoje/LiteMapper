@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LiteMapper.DependencyInjection</name>
+    </assembly>
+    <members>
+        <member name="T:LiteMapper.DependencyInjection.ServiceCollectionExtensions">
+            <summary>
+            Provides extension methods for registering LiteMapper services
+            with the .NET dependency injection container.
+            </summary>
+            <remarks>
+            These extensions simplify the integration of LiteMapper into applications
+            that use <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> for dependency management.
+            </remarks>
+        </member>
+        <member name="M:LiteMapper.DependencyInjection.ServiceCollectionExtensions.AddLiteMapper(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{LiteMapper.Configuration.MapperConfiguration})">
+             <summary>
+             Registers LiteMapper services and configures mapping definitions
+             in the dependency injection container.
+             </summary>
+             <param name="services">
+             The service collection to which LiteMapper services are registered.
+             </param>
+             <param name="configure">
+             An action used to configure mapping definitions, profiles,
+             and other mapping options through <see cref="T:LiteMapper.Configuration.MapperConfiguration"/>.
+             </param>
+             <returns>
+             The same <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> instance so that
+             additional service registrations can be chained.
+             </returns>
+             <exception cref="T:System.ArgumentNullException">
+             Thrown when <paramref name="services"/> or
+             <paramref name="configure"/> is null.
+             </exception>
+             <remarks>
+             The method creates a <see cref="T:LiteMapper.Configuration.MapperConfiguration"/> using
+             the supplied configuration action and registers the following services:
+            
+             <list type="bullet">
+             <item>
+             <description>
+             <see cref="T:LiteMapper.Configuration.MapperConfiguration"/> is registered as a singleton.
+             </description>
+             </item>
+             <item>
+             <description>
+             <see cref="T:LiteMapper.Abstractions.IMapper"/> is registered with a scoped lifetime,
+             using <see cref="T:LiteMapper.Engine.Mapper"/> as its implementation.
+             </description>
+             </item>
+             </list>
+            
+             Existing registrations are preserved because
+             <see cref="M:Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
+             and <see cref="M:Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddScoped``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
+             are used.
+             </remarks>
+        </member>
+    </members>
+</doc>

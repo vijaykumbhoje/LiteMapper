@@ -91,6 +91,54 @@ public class CircularReferenceTests
         Assert.Same(result.First, result.Second);
     }
 
+
+    [Fact]
+    public void Map_ShouldPreserveSharedReferencesInsideCollection()
+    {
+        var mapper = CreateMapper();
+
+        var sharedNode = new SharedNode { Id = 100 };
+
+        var source = new CollectionReferenceSource
+        {
+            Items = new List<SharedNode>
+        {
+            sharedNode,
+            sharedNode
+        }
+        };
+
+        var result = mapper.Map<
+            CollectionReferenceSource,
+            CollectionReferenceDestination>(source);
+
+        Assert.Equal(2, result.Items.Count);
+        Assert.Equal(100, result.Items[0].Id);
+
+        // Both entries should reference the same mapped object.
+        Assert.Same(result.Items[0], result.Items[1]);
+    }
+
+    [Fact]
+    public void Map_ShouldHandleCircularReferencesThroughCollection()
+    {
+        var mapper = CreateMapper();
+
+        var employee = new CollectionEmployee { Id = 1 };
+
+        employee.Subordinates.Add(employee);
+
+        var result = mapper.Map<
+            CollectionEmployee,
+            CollectionEmployeeDto>(employee);
+
+        Assert.Equal(1, result.Id);
+        Assert.Single(result.Subordinates);
+
+        // The collection entry should reference the root destination.
+        Assert.Same(result, result.Subordinates[0]);
+    }
+
     private static Mapper CreateMapper()
     {
         var configuration = new MapperConfiguration(cfg =>
@@ -146,6 +194,32 @@ public class CircularReferenceTests
         public NodeDto? Child { get; set; }
     }
 
+
+    public class CollectionReferenceSource
+    {
+        public List<SharedNode> Items { get; set; } = new();
+    }
+
+    public class CollectionReferenceDestination
+    {
+        public List<SharedNodeDto> Items { get; set; } = new();
+    }
+
+    public class CollectionEmployee
+    {
+        public int Id { get; set; }
+
+        public List<CollectionEmployee> Subordinates { get; set; } = new();
+    }
+
+    public class CollectionEmployeeDto
+    {
+        public int Id { get; set; }
+
+        public List<CollectionEmployeeDto> Subordinates { get; set; } = new();
+    }
+
+
     public class TestProfile : MappingProfile
     {
         public TestProfile()
@@ -155,6 +229,9 @@ public class CircularReferenceTests
 
             CreateMap<SharedNode, SharedNodeDto>();
             CreateMap<SharedReferenceSource, SharedReferenceDestination>();
+
+            CreateMap<CollectionReferenceSource, CollectionReferenceDestination>();
+            CreateMap<CollectionEmployee, CollectionEmployeeDto>();
         }
     }
 }

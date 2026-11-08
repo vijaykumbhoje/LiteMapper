@@ -2,10 +2,11 @@
 using LiteMapper.Engine;
 using Xunit;
 
-namespace LiteMapper.Tests;
+namespace LiteMapper.Tests.Configuration;
 
 public class ConfigurationTests
 {
+
     [Fact]
     public void Configuration_ShouldRejectDuplicateMappings()
     {
